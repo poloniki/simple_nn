@@ -36,7 +36,7 @@ graph_loss.edge('W1', 'Mult')
 graph_loss.edge('Mult', 'Relu')
 graph_loss.edge('Relu', 'Prediction')
 graph_loss.edge('W2', 'Prediction')
-graph_loss.edge('Prediction', 'L2 Loss', label='(y_pred -y_true)**2')
+graph_loss.edge('Prediction', 'L2 Loss', label='(y_pred - y_true)**2')
 st.graphviz_chart(graph_loss)
 
 
