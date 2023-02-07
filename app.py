@@ -2,7 +2,7 @@ import streamlit as st
 
 import psycopg2
 conn = psycopg2.connect(
-    host="localhost",
+    host="34.66.155.95",
     database="postgres",
     user="postgres",
     password="docker"
