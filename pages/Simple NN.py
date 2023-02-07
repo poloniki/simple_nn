@@ -35,7 +35,7 @@ def reluDerivative(x):
     x[x>0] = 1
     return x
 conn = psycopg2.connect(
-    host="localhost",
+    host="34.66.155.95",
     database="postgres",
     user="postgres",
     password="docker"
