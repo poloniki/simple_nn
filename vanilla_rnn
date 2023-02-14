@@ -1,0 +1,23 @@
+graph {
+	graph [TBbalance=max rankdir=LR]
+	node [shape=circle]
+	X
+	h_prev
+	U
+	W
+	h
+	V
+	y
+	X -- U [label="input
+transform"]
+	h_prev -- W [label="hidden
+transform"]
+	U -- h [label="input
+hidden"]
+	W -- h [label="prev
+hidden"]
+	h -- V [label="hidden
+output"]
+	V -- y [label="output
+transform"]
+}

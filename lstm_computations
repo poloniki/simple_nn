@@ -1,0 +1,77 @@
+// LSTM Computations
+digraph {
+	x [label="Input
+(x)"]
+	h_prev [label="Previous Hidden State
+(h_{t-1})"]
+	concat [label="Concatenation
+[h_{t-1}, x]"]
+	Wf [label="Weight Matrix
+Wf"]
+	bf [label="Bias Vector
+bf"]
+	ft [label="Forget Gate
+ft = sigmoid(Wf * concat + bf)"]
+	Wi [label="Weight Matrix
+Wi"]
+	bi [label="Bias Vector
+bi"]
+	it [label="Input Gate
+it = sigmoid(Wi * concat + bi)"]
+	Wc [label="Weight Matrix
+Wc"]
+	bc [label="Bias Vector
+bc"]
+	ct_ [label="Candidate Memory
+ct_ = tanh(Wc * concat + bc)"]
+	ct [label="Cell State
+ct = ft * c_{t-1} + it * ct_"]
+	Wo [label="Weight Matrix
+Wo"]
+	bo [label="Bias Vector
+bo"]
+	ot [label="Output Gate
+ot = sigmoid(Wo * concat + bo)"]
+	ht [label="Hidden State
+ht = ot * tanh(ct)"]
+	x -> concat [label="Append
+[h_{t-1}, x]"]
+	h_prev -> concat [label="Append
+[h_{t-1}, x]"]
+	concat -> ft [label="Compute ft
+ft = sigmoid(Wf * concat + bf)"]
+	Wf -> ft [label="Compute ft
+ft = sigmoid(Wf * concat + bf)"]
+	bf -> ft [label="Compute ft
+ft = sigmoid(Wf * concat + bf)"]
+	concat -> it [label="Compute it
+it = sigmoid(Wi * concat + bi)"]
+	Wi -> it [label="Compute it
+it = sigmoid(Wi * concat + bi)"]
+	bi -> it [label="Compute it
+it = sigmoid(Wi * concat + bi)"]
+	concat -> ct_ [label="Compute ct_
+ct_ = tanh(Wc * concat + bc)"]
+	Wc -> ct_ [label="Compute ct_
+ct_ = tanh(Wc * concat + bc)"]
+	bc -> ct_ [label="Compute ct_
+ct_ = tanh(Wc * concat + bc)"]
+	ft -> ct [label="Compute ct
+ct = ft * c_{t-1} + it * ct_"]
+	h_prev -> ct [label="Compute ct
+ct = ft * c_{t-1} + it * ct_"]
+	it -> ct [label="Compute ct
+ct = ft * c_{t-1} + it * ct_"]
+	ct_ -> ct [label="Compute ct
+ct = ft * c_{t-1} + it * ct_"]
+	concat -> ot [label="Compute ot
+ot = sigmoid(Wo * concat + bo)"]
+	Wo -> ot [label="Compute ot
+ot = sigmoid(Wo * concat + bo)"]
+	bo -> ot [label="Compute ot
+ot = sigmoid(Wo * concat + bo)"]
+	ct -> ht [label="Compute ht
+ht = ot * tanh(ct)"]
+	ot -> ht [label="Compute ht
+ht = ot * tanh(ct)"]
+}
