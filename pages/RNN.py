@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import graphviz as gv
 import random
-g1 = gv.Graph(graph_attr={'rankdir':'LR', 'TBbalance':"max"},format='png')
+g1 = gv.Graph(graph_attr={'rankdir':'LR', 'TBbalance':"max"})
 
 g1.attr('node', shape='circle')
 g1.node('X')
