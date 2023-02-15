@@ -1,9 +1,9 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import graphviz as gv
+import graphviz
 import random
-g1 = gv.Graph(graph_attr={'rankdir':'LR', 'TBbalance':"max"})
+g1 = graphviz.Digraph(graph_attr={'rankdir':'LR', 'TBbalance':"max"})
 
 g1.attr('node', shape='circle')
 g1.node('X')
