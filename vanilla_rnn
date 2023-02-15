@@ -1,4 +1,4 @@
-graph {
+digraph {
 	graph [TBbalance=max rankdir=LR]
 	node [shape=circle]
 	X
@@ -8,16 +8,16 @@ graph {
 	h
 	V
 	y
-	X -- U [label="input
+	X -> U [label="input
 transform"]
-	h_prev -- W [label="hidden
+	h_prev -> W [label="hidden
 transform"]
-	U -- h [label="input
+	U -> h [label="input
 hidden"]
-	W -- h [label="prev
+	W -> h [label="prev
 hidden"]
-	h -- V [label="hidden
+	h -> V [label="hidden
 output"]
-	V -- y [label="output
+	V -> y [label="output
 transform"]
 }

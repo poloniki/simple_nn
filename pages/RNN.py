@@ -3,26 +3,26 @@ import pandas as pd
 import numpy as np
 import graphviz
 import random
-# g1 = graphviz.Digraph(graph_attr={'rankdir':'LR', 'TBbalance':"max"})
+g1 = graphviz.Digraph(graph_attr={'rankdir':'LR', 'TBbalance':"max"})
 
-# g1.attr('node', shape='circle')
-# g1.node('X')
-# g1.node('h_prev')
-# g1.node('U')
-# g1.node('W')
-# g1.node('h')
-# g1.node('V')
-# g1.node('y')
+g1.attr('node', shape='circle')
+g1.node('X')
+g1.node('h_prev')
+g1.node('U')
+g1.node('W')
+g1.node('h')
+g1.node('V')
+g1.node('y')
 
-# g1.edge('X', 'U', label='input\ntransform')
-# g1.edge('h_prev', 'W', label='hidden\ntransform')
-# g1.edge('U', 'h', label='input\nhidden')
-# g1.edge('W', 'h', label='prev\nhidden')
-# g1.edge('h', 'V', label='hidden\noutput')
-# g1.edge('V', 'y', label='output\ntransform')
+g1.edge('X', 'U', label='input\ntransform')
+g1.edge('h_prev', 'W', label='hidden\ntransform')
+g1.edge('U', 'h', label='input\nhidden')
+g1.edge('W', 'h', label='prev\nhidden')
+g1.edge('h', 'V', label='hidden\noutput')
+g1.edge('V', 'y', label='output\ntransform')
 
-# g1.render('vanilla_rnn')
-# st.graphviz_chart(g1)
+g1.render('vanilla_rnn')
+st.graphviz_chart(g1)
 
 
 
@@ -97,16 +97,16 @@ with column3:
 
 with st.form(key='my_form'):
     st.write('Number of Time Stamps = Sequence Length = Number of RNN cells. How many days of data do we need to pedict sales?')
-    num_time_steps = st.number_input(label='Number of time steps', min_value=2, max_value=5, step=1,value=3)
+    num_time_steps = st.number_input(label='Number of time steps', min_value=2, max_value=20, step=1,value=3)
 
     st.write('Batch size = Number of sequences in a batch. How many samples do we pass at once at a time?')
     batch_size = st.number_input(label='Batch size', min_value=1, max_value=20, step=1, value=10)
 
     st.write('Number of hidden units = Number of neurons in a cell. How many new features that pass through time we want to create? Example: keras.layers.RNN(10) - means 10 neurons = 10 new features')
-    num_hidden_units = st.number_input(label='Neurons', min_value=1, max_value=10, step=1, value=4)
+    num_hidden_units = st.number_input(label='Neurons', min_value=1, max_value=10, step=1, value=5)
 
     st.write('Learning rate')
-    learning_rate = st.number_input(label='Learning rate', min_value=0.0001, max_value=0.1, step=0.0001, value=0.01)
+    learning_rate = st.number_input(label='Learning rate', min_value=0.0001, max_value=0.1, step=0.0001, value=0.001)
 
 
     submit_button = st.form_submit_button(label='Submit')
@@ -117,13 +117,13 @@ def create_df(array, columns, index, name):
     st.write(f'{name}. Shape:', array.shape)
     return st.dataframe(df)
 
-st.header('Initialize the weight matrices and bias vectors for the RNN layer')
+st.write('Initialize the weight matrices and bias vectors for the RNN layer')
 with st.expander('Weights and Bias'):
     W_xh = np.random.randn(num_input_features, num_hidden_units)
     create_df(W_xh, [f'W_xh_{i}' for i in range(num_hidden_units)], [f'{df.columns[0]}' for i in range(num_input_features)], 'W_xh')
 
     W_hh = np.random.randn(num_hidden_units, num_hidden_units)
-    create_df(W_hh, [f'W_hh_{i}' for i in range(num_hidden_units)], [f'feature_{i}' for i in range(num_hidden_units)], 'W_hh')
+    create_df(W_hh, [f'W_hh_{i}' for i in range(num_hidden_units)], [f'memory_feature_{i}' for i in range(num_hidden_units)], 'W_hh')
 
     b_h = np.zeros((1, num_hidden_units))
     #create_df(b_h, [f'b_h_{i}' for i in range(num_hidden_units)], [f'1' for i in range(1)], 'b_h')
@@ -133,10 +133,10 @@ with st.expander('Weights and Bias'):
 
     b_y = np.zeros((1, num_input_features))
     #create_df(b_y, [f'b_y_{i}' for i in range(num_input_features)], [f'1' for i in range(1)], 'b_y')
-st.header('Initialize the hidden state (this is the initial state before processing any input)')
+st.write('Initialize the hidden state (this is the initial state before processing any input)')
 with st.expander('Hidden State'):
     h_t = np.zeros((batch_size, num_hidden_units))
-    create_df(h_t, [f'feature_{i}' for i in range(num_hidden_units)], [f'batch_sample_{i}' for i in range(batch_size)], 'h_t')
+    create_df(h_t, [f'memory_feature_{i}' for i in range(num_hidden_units)], [f'batch_sample_{i}' for i in range(batch_size)], 'h_t')
 
 
 if 'count' not in st.session_state:
@@ -157,7 +157,7 @@ if initialize:
     else:
         W_xh, W_hh, b_h, W_hy, b_y = st.session_state.W_xh, st.session_state.W_hh, st.session_state.b_h, st.session_state.W_hy, st.session_state.b_y
     for i in range(0, len(data) - num_time_steps, batch_size):
-        st.header(f'------------ Batch {int(i/batch_size)} ------------')
+        st.header(f'------------------------ Batch {int(i/batch_size)} ------------')
         # Extract the input sequence for the current batch
         x_batch = np.zeros((batch_size, num_time_steps, num_input_features))
 
@@ -166,15 +166,14 @@ if initialize:
 
         # Compute the new hidden states for the current batch using the current inputs and previous hidden states
         h_t = np.zeros((batch_size, num_hidden_units))
-        st.header(f':green[----------Forward pass----------]')
+        st.header(f':green[Forward pass]')
         column1, column2 = st.columns(2)
         for t in range(num_time_steps):
-            st.subheader(f':green[RNN cell {t}]')
-            with st.expander('Cell'):
+            with st.expander(f'RNN cell {t}'):
                 x_t = x_batch[:,t,:]
                 create_df(x_t, [f'{df.columns[i]}' for i in range(num_input_features)], [f'batch_sample_{i}' for i in range(batch_size)], 'x_t')
                 h_t = np.tanh(np.dot(x_t, W_xh) + np.dot(h_t, W_hh) + b_h)
-                create_df(h_t, [f'feature_{i}' for i in range(num_hidden_units)], [f'batch_sample_{i}' for i in range(batch_size)], 'h_t')
+                create_df(h_t, [f'memory_feature_{i}' for i in range(num_hidden_units)], [f'batch_sample_{i}' for i in range(batch_size)], 'h_t')
 
 
         # Compute the outputs for the current batch at the last time step
@@ -214,11 +213,10 @@ if initialize:
 
         # Initialize the gradients of the hidden state for the current batch (this will be used as the initial gradients for backpropagation)
         grad_h = np.zeros((batch_size, num_hidden_units))
-        st.header(f':red[----------Backward pass----------]')
+        st.header(f':red[Backward pass]')
         # Loop backward through the time steps and compute the gradients for each time step for the current batch
         for t in reversed(range(num_time_steps)):
-            st.subheader(f':red[Gradient of RNN cell {t}]')
-            with st.expander('Cell'):
+            with st.expander(f'Gradient of RNN cell {t}'):
                 x_t = x_batch[:,t,:]
                 h_t = np.tanh(np.dot(x_t, W_xh) + np.dot(h_t, W_hh) + b_h)
 
@@ -259,6 +257,12 @@ if initialize:
         b_h -= learning_rate * total_grad_b_h
         W_hy -= learning_rate * total_grad_W_hy
         b_y -= learning_rate * total_grad_b_y
+
+        st.subheader(f'Summed gradients')
+        with st.expander('Gradients'):
+            create_df(total_grad_W_xh, [f'grad_W_xh_{i}' for i in range(num_hidden_units)], [f'x_{i}' for i in range(num_input_features)], 'total_grad_W_xh')
+            create_df(total_grad_W_hh, [f'grad_W_hh_{i}' for i in range(num_hidden_units)], [f'h_{i}' for i in range(num_hidden_units)], 'total_grad_W_hh')
+            create_df(total_grad_W_hy, [f'grad_W_hy_{i}' for i in range(num_input_features)], [f'h_{i}' for i in range(num_hidden_units)], 'total_grad_W_hy')
 
         st.session_state.W_xh = W_xh
         st.session_state.W_hh = W_hh
