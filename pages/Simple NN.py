@@ -19,7 +19,7 @@ def highlight(data):
     return styles
 
 
-graph_loss = graphviz.Digraph(graph_attr={'rankdir':'LR', 'TBbalance':"max"},format='png')
+graph_loss = graphviz.Digraph(graph_attr={'rankdir':'LR', 'TBbalance':"max"})
 graph_loss.edge('X', 'Mult')
 graph_loss.edge('W1', 'Mult')
 graph_loss.edge('Mult', 'Relu')

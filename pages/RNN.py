@@ -21,7 +21,6 @@ g1.edge('W', 'h', label='prev\nhidden')
 g1.edge('h', 'V', label='hidden\noutput')
 g1.edge('V', 'y', label='output\ntransform')
 
-g1.render('vanilla_rnn')
 st.graphviz_chart(g1)
 
 
