@@ -57,13 +57,19 @@ expander_Y = st.expander("Y (y_true)")
 expander_Y.dataframe(y)
 
 X = x.drop('name', axis=1)
+
+
 Y = y.drop('name', axis=1)
 N, D_in, H, D_out = X.shape[0], X.shape[1], 10, Y.shape[1]
 
 X_matrix = X.astype('float').to_numpy()
 Y_matrix = Y.astype('float').to_numpy()
 
-
+mean = np.mean(X_matrix)
+std = np.std(X_matrix)
+X_matrix = (X_matrix-mean)/std
+expander_X_norm = st.expander("X Normalized")
+expander_X_norm.dataframe(X_matrix)
 
 
 
@@ -81,7 +87,7 @@ with col2:
     if st.button('Clear Cache'):
         st.runtime.legacy_caching.clear_cache()
 
-learning_rate = st.number_input('Learning Rate', value=0.00001,key='learning_rate',format="%.5f")
+learning_rate = st.number_input('Learning Rate', value=0.001,key='learning_rate',format="%.5f")
 
 
 @st.cache(allow_output_mutation=True)
