@@ -38,9 +38,17 @@ def select_countries():
 
     update_db(st.session_state.name,st.session_state.climate,st.session_state.culture,st.session_state.cuisine,st.session_state.adventure,st.session_state.natural,st.session_state.budget,st.session_state.language,st.session_state.safety)
     with st.form(key="country", clear_on_submit=True):
+        st.write('You were given 2 thousand Euros for your vocation, congratulations! You have following options:')
+        country_options = ['4 days - Iceland', '2 days - Maldives', '3 days - Monaco', '7 days - Singapore', '12 days - Egypt']
+
+        numbered_list = "\n".join([f"1. {every}" for every in country_options])
+        st.markdown(numbered_list)
+
         option = st.selectbox(
             'Which country would you choose for your trip?',
             ('Iceland', 'Maldives', 'Monaco', 'Singapore', 'Egypt'), key='country')
+
+
 
         submit = st.form_submit_button(
                     "Submit", on_click=success, args=(st.session_state.name,))

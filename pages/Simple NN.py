@@ -69,7 +69,10 @@ mean = np.mean(X_matrix)
 std = np.std(X_matrix)
 X_matrix = (X_matrix-mean)/std
 expander_X_norm = st.expander("X Normalized")
-expander_X_norm.dataframe(X_matrix)
+X_matrix_df = pd.DataFrame(X_matrix)
+X_matrix_df.columns = X.columns
+X_matrix_df.index = x.name
+expander_X_norm.dataframe(X_matrix_df)
 
 
 
@@ -87,7 +90,10 @@ with col2:
     if st.button('Clear Cache'):
         st.runtime.legacy_caching.clear_cache()
 
-learning_rate = st.number_input('Learning Rate', value=0.001,key='learning_rate',format="%.5f")
+
+learning_rate = st.number_input('Learning Rate', value=0.001,key='learning_rate',format="%.3f")
+
+
 
 
 @st.cache(allow_output_mutation=True)

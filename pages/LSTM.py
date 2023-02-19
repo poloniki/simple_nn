@@ -47,5 +47,4 @@ dot.edge('bo', 'ot', 'Compute ot\not = sigmoid(Wo * concat + bo)')
 dot.edge('ct', 'ht', 'Compute ht\nht = ot * tanh(ct)')
 dot.edge('ot', 'ht', 'Compute ht\nht = ot * tanh(ct)')
 
-dot.render('lstm_computations', view=True)
 st.graphviz_chart(dot)

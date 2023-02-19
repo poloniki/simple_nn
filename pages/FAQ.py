@@ -1,5 +1,5 @@
 import streamlit as st
-
+st.header('This page is under construction.')
 
 with st.expander('What is a loss function?'):
     st.write('Way to quantify how good a model is at predicting the target variable')
@@ -13,37 +13,44 @@ with st.expander('What is Softmax Loss'):
              if we maximmiz log of probability. Loss function measure badness so we need to add -1.
              Mathematicaly it is easier to maximize log, than maximaze row probability.''')
 
-st.write('SVM only cares about going above threshold. Softmax will try to push score for correct class to infinity. In practice they tend to perform similary.')
-st.write('Gradient is a vector of partial derivatives. It points to the direction of greates increase. It tells us how much each parameter affects the final result.')
+with st.expander('Difference between SWM and softmax loss?'):
+    st.write('SVM only cares about going above threshold. Softmax will try to push score for correct class to infinity. In practice they tend to perform similary.')
+
+with st.expander('What is Gradient'):
+    st.write('Gradient is a vector of partial derivatives. It points to the direction of greates increase. It tells us how much each parameter affects the final result.')
+
+with st.expander('Whate are the Gradient Descent distributive properties?'):
+    st.write('Addition - distrubutes. Max - routes. Multiplication - switches.')
+
 
 with st.expander('Why do we need regularization?'):
     st.write('Occams Razor: "Among competing hypotheses, the simplest is the best". To prevent overfitting. Actually single problem can have multiple solutions. If you found perfect weights for W which results in loss 0, that does not automatically mean you have the best mode. Your W*2 would still be the solution.')
 with st.expander('What is L1 and L2 - what is the difference'):
     st.write('''L2 is most common. Euclidian norm (). Measures complexity of model. Spreads influence between weights.
-
              Sometimes L1 - incourage sparsity. Elastic - combination. Dropout. Batch normalization.
              L1 has different notion. model is less complex if it has more 0 in the vector. ''')
 
 
 
-st.write('Addition - distrubutes. Max - routes. Multiplication - switches.')
 
+with st.expander('What is the difference between activation functions?'):
+    st.write('''Sigmoid - squashes number from 0 to 1.
+            Problems
+            1. Saturated gradient can kill neuron.
+            Because of chain rule it can kill flow down the chain. d/dx sigmoid(x) = sigmoid(x) * (1 - sigmoid(x))
+            2. Not zero centered. Our Local gradient will all postive or all negative.
 
-st.write('''Sigmoid - squashes number from 0 to 1.
-         Problems
-         1. Saturated gradient can kill neuron.
-         Because of chain rule it can kill flow down the chain. d/dx sigmoid(x) = sigmoid(x) * (1 - sigmoid(x))
-         2. Not zero centered. Our Local gradient will all postive or all negative.
+            Tanh - squashes between -1 and 1 - so no second problem. But still problem with saturation d/dx tanh(x) = 1 - tanh(x)^2
 
-         Tanh - squashes between -1 and 1 - so no second problem. But still problem with saturation d/dx tanh(x) = 1 - tanh(x)^2
+            Relu - Does not saturate in + region. Simple. 6x times faster convergence.
+            Not zero-centered. Saturared with negative. Possible to have dead relus (if lr is too high )
 
-         Relu - Does not saturate in + region. Simple. 6x times faster convergence.
-         Not zero-centered. Saturared with negative. Possible to have dead relus (if lr is too high )
+            Leaky Relu - does not saturate
+            ELU
+            Maxout
+            ''')
 
-         Leaky Relu - does not saturate
-         ELU
-         Maxout
-         ''')
-
-st.write(' Why normalize - every feature should have same influence on the start. Optimizing gradient routes.')
-st.write(' Why not set all weights to 0 - then they all be updated the same way')
+with st.expander('Why normalize?'):
+    st.write('Every feature should have same influence on the start. Optimizing gradient routes.')
+with st.expander('Why not set all weights to 0?'):
+    st.write('Then they all be updated the same way')

@@ -49,7 +49,7 @@ with st.form(key="test"):
 
     col1, col2  = st.columns(2)
     with col1:
-        x = st.number_input('X', value=0.3,key='x',format="%.2f") #3
+        x = st.number_input('X',min_value=0.0, max_value=100.0, value=0.3,key='x',format="%.2f") #3
     with col2:
         y = st.number_input('Y', value=1.0,key='y',format="%.2f") #100
 
@@ -89,44 +89,44 @@ if submit:
 
     # Forward pass
     # X
-    graph.edge(f'{x:.3f}', f'{w1_mult_x:.3f} ', label=f'{x}*{w1:.3f}')
+    graph.edge(f'{x:.2f}', f'{w1_mult_x:.2f} ', label=f'{x:.2f}*{w1:.2f}')
 
     # W1
-    graph.node(f'{w1:.3f}', shape='circle',**yellow)
-    graph.edge(f'{w1:.3f}', f'{w1_mult_x:.3f} ', label=f'{w1:.3f}*{x:.3f}')
+    graph.node(f'{w1:.2f}', shape='circle',**yellow)
+    graph.edge(f'{w1:.2f}', f'{w1_mult_x:.2f} ', label=f'{w1:.2f}*{x:.2f}')
 
     # Relu
-    graph.edge(f'{w1_mult_x:.3f} ', f'{h:.3f}', label=f'max(0,{w1_mult_x:.3f})')
-    graph.edge(f'{h:.3f}', f'{y_pred:.3f}', label=f'{h:.3f}*{w2:.3f}')
+    graph.edge(f'{w1_mult_x:.2f} ', f'{h:.2f}', label=f'max(0,{w1_mult_x:.2f})')
+    graph.edge(f'{h:.2f}', f'{y_pred:.2f}', label=f'{h:.2f}*{w2:.2f}')
 
     #W2
-    graph.node(f'{w2:.3f}', shape='circle',**yellow)
+    graph.node(f'{w2:.2f}', shape='circle',**yellow)
 
-    graph.node(f'{y_pred:.3f}', shape='circle',**green)
-    graph.edge(f'{w2:.3f}', f'{y_pred:.3f}', label=f'{w2}*{h:.3f}', rank='min')
+    graph.node(f'{y_pred:.2f}', shape='circle',**green)
+    graph.edge(f'{w2:.2f}', f'{y_pred:.2f}', label=f'{w2:.2f}*{h:.2f}', rank='min')
 
     # Loss
-    graph.node(f'{loss:.3f}', shape='circle',**pink)
+    graph.node(f'{loss:.2f}', shape='circle',**pink)
 
 
-    graph.edge(f'{y_pred:.3f}', f'{loss:.3f}', label=f'({y} - {y_pred:.3f})**2')
+    graph.edge(f'{y_pred:.2f}', f'{loss:.2f}', label=f'({y_pred:.2f} - {y:.2f})**2')
 
 
 
     ### Backprop
-    graph.edge(f'{loss:.3f}', f'{y_pred:.3f}', label=f'2*({y} - {y_pred})={grad_y_pred:.3f}', color='red')
-    graph.edge(f'{y_pred:.3f}', f'{h:.3f}', label=f'{w2}*{grad_y_pred}={grad_h:.3f}', color='red',)
-    graph.edge(f'{y_pred:.3f}', f'{w2:.3f}', label=f'{h}*{grad_y_pred}={grad_w2:.3f}', color='red',constraint='false')
-    graph.edge(f'{h:.3f}', f'{w1_mult_x:.3f} ', label=f'{grad_relu:.3f}*{grad_h}={grad_q:.3f}', color='red')
-    graph.edge(f'{w1_mult_x:.3f} ', f'{x:.3f}', label=f'{grad_q:.3f}*{w1:.3f}={grad_x:.3f}', color='red', )
-    graph.edge(f'{w1_mult_x:.3f} ', f'{w1:.3f}', label=f'{grad_q:.3f}*{x}={grad_w1:.3f}', color='red',  constraint='false')
+    graph.edge(f'{loss:.2f}', f'{y_pred:.2f}', label=f'2*({y_pred:.2f} - {y:.2f})={grad_y_pred:.2f}', color='red')
+    graph.edge(f'{y_pred:.2f}', f'{h:.2f}', label=f'{w2:.2f}*{grad_y_pred:.2f}={grad_h:.2f}', color='red',)
+    graph.edge(f'{y_pred:.2f}', f'{w2:.2f}', label=f'{h:.2f}*{grad_y_pred:.2f}={grad_w2:.2f}', color='red',constraint='false')
+    graph.edge(f'{h:.2f}', f'{w1_mult_x:.2f} ', label=f'{grad_relu:.2f}*{grad_h:.2f}={grad_q:.2f}', color='red')
+    graph.edge(f'{w1_mult_x:.2f} ', f'{x:.2f}', label=f'{grad_q:.2f}*{w1:.2f}={grad_x:.2f}', color='red', )
+    graph.edge(f'{w1_mult_x:.2f} ', f'{w1:.2f}', label=f'{grad_q:.2f}*{x:.2f}={grad_w1:.2f}', color='red',  constraint='false')
 
     st.graphviz_chart(graph)
 
 
 
-    st.write(f'Updated W1: {w1} - ({learning_rate}*{grad_w1})= {update_w1:.3f}')
-    st.write(f'Updated W2: {w2} - ({learning_rate}*{grad_w2}) = {update_w2:.3f}')
+    st.write(f'Updated W1: {w1:.2f} - ({learning_rate:.2f}*{grad_w1:.2f})= {update_w1:.2f}')
+    st.write(f'Updated W2: {w2:.2f} - ({learning_rate:.2f}*{grad_w2:.2f}) = {update_w2:.2f}')
 
 
 losses = []
@@ -192,4 +192,4 @@ if start_btn:
          size = N - 1
       time.sleep(0.1)
 if st.button('Show final results'):
-    st.write(f"Final W1: {w1:.3f}, W2: {w2:.3f}")
+    st.write(f"Final W1: {w1:.2f}, W2: {w2:.2f}")
