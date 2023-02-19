@@ -91,7 +91,7 @@ with col2:
         st.runtime.legacy_caching.clear_cache()
 
 
-learning_rate = st.number_input('Learning Rate', value=0.001,key='learning_rate',format="%.3f")
+learning_rate = st.number_input('Learning Rate', value=0.009,key='learning_rate',format="%.3f")
 
 
 
@@ -257,6 +257,7 @@ with st.expander("Predict"):
 if predict:
 
     w1,w2 = st.session_state.w1, st.session_state.w2
+    x_predict = (x_predict-mean)/std
     w1_mult_x= x_predict.dot(w1)
     h = np.maximum(0, w1_mult_x)
     y_pred = h.dot(w2)
