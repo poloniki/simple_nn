@@ -1,27 +1,38 @@
 import streamlit as st
+from google.oauth2 import service_account
+from google.cloud import bigquery
 
-import psycopg2
-conn = psycopg2.connect(
-    host="34.170.175.129",
-    database="postgres",
-    user="postgres",
-    password=st.secrets["DB_PASS"]
+# Create API client.
+credentials = service_account.Credentials.from_service_account_info(
+    st.secrets["gcp_service_account"]
 )
+client = bigquery.Client(credentials=credentials)
 
+# Put your project id here
+project_id = "wagon-bootcamp-355610"
+
+# Prepare the SQL statement
+def execute_query(query):
+    return client.query(query).result()
 
 def update_db(name, climate, culture, cuisine, adventure, natural, budget, language, safety):
-    with conn:
-            cur = conn.cursor()
-            cur.execute(f"INSERT INTO ratings (name,climate,culture,cuisine,adventure_activities,natural_beauty,budget,language,safety) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)", (name, climate, culture, cuisine, adventure, natural, budget, language, safety))
-            cur.close()
+    query = f"""
+        INSERT INTO `{project_id}.ml.ratings`
+        (name, climate, culture, cuisine, adventure_activities, natural_beauty, budget, language, safety)
+        VALUES ('{name}', {climate}, {culture}, {cuisine}, {adventure}, {natural}, {budget}, {language}, {safety})
+    """
+    execute_query(query)
+
 def update_answers(name, country):
     countries = {'iceland':0, 'maldives':0, 'monaco':0, 'singapore':0, 'egypt':0}
     countries[country.lower()] = 1
     iceland, maldives, monaco, singapore, egypt = countries['iceland'], countries['maldives'], countries['monaco'], countries['singapore'], countries['egypt']
-    with conn:
-            cur = conn.cursor()
-            cur.execute(f"INSERT INTO answers (name, iceland, maldives, monaco, singapore, egypt) VALUES (%s,%s,%s,%s,%s,%s)", (name, iceland, maldives, monaco, singapore, egypt))
-            cur.close()
+    query = f"""
+        INSERT INTO `{project_id}.ml.answers`
+        (name, iceland, maldives, monaco, singapore, egypt)
+        VALUES ('{name}', {iceland}, {maldives}, {monaco}, {singapore}, {egypt})
+    """
+    execute_query(query)
 
 def main():
     if ('name' not in st.session_state) & ('country' not in st.session_state):
@@ -31,7 +42,8 @@ def main():
 def success(name):
     country = st.session_state.country
     update_answers(name,country)
-    st.success(f'Great choice, {name}! I knew you would choose {country}..', icon="✅")
+    st.success(f'Great choice, {name}! I knew you would choose {country}..')
+
 
 
 def select_countries():

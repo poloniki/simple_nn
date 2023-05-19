@@ -6,6 +6,15 @@ import graphviz
 import numpy as np
 from numpy.random import randn
 
+from google.oauth2 import service_account
+from google.cloud import bigquery
+
+# Create API client.
+credentials = service_account.Credentials.from_service_account_info(
+    st.secrets["gcp_service_account"]
+)
+client = bigquery.Client(credentials=credentials)
+
 def highlight(data):
     is_min = data == data.nsmallest(1).iloc[-1]
     is_max = data == data.nlargest(1).iloc[0]
@@ -36,18 +45,19 @@ def reluDerivative(x):
     return x
 
 
-conn = psycopg2.connect(
-    host="34.170.175.129",
-    database="postgres",
-    user="postgres",
-    password=st.secrets["DB_PASS"]
-)
+# Define your project id and dataset id
+project_id = 'wagon-bootcamp-355610'
+dataset_id = 'ml'
 
+# Query to get data from the "ratings" table
+query_ratings = f"SELECT * FROM `{project_id}.{dataset_id}.ratings`"
+# Execute the query and load the result into a pandas DataFrame
+x = pd.read_gbq(query_ratings, credentials=credentials)
 
-
-x = pd.read_sql_query("SELECT * FROM ratings", conn)
-y = pd.read_sql_query("SELECT * FROM answers", conn)
-
+# Query to get data from the "answers" table
+query_answers = f"SELECT * FROM `{project_id}.{dataset_id}.answers`"
+# Execute the query and load the result into a pandas DataFrame
+y = pd.read_gbq(query_answers, credentials=credentials)
 
 
 
@@ -144,34 +154,33 @@ if initialize:
         st.dataframe(h_style.style.applymap(lambda x: 'background-color: rgba(255,0,0,0.3)' if x == 0 else ''))
 
 
+   # Forward pass:
+    # Relu*W2 | h.dot(w2)
     with st.expander("Y_Pred = Relu*W2"):
-        st.header("Relu*W2 | relu.dot(w2)")
-        y_pred = h.dot(w2)
+        st.header("Y_Pred = Relu*W2 | np.exp(h.dot(w2)) / np.sum(np.exp(h.dot(w2)))")
+        y_pred_raw = h.dot(w2)
+        y_pred = np.exp(y_pred_raw) / np.sum(np.exp(y_pred_raw))  # softmax
         y_pred_style = pd.DataFrame(y_pred)
         y_pred_style.columns = Y.columns
         y_pred_style.index = x.name
         st.dataframe(y_pred_style.style.apply(highlight, axis=1))
 
-    st.subheader('Loss - np.square(y_pred - y_true).sum()')
-    loss = np.square(y_pred - Y_matrix).sum()
+    # Loss calculation
+    st.subheader('Loss - (-np.sum(y_true * np.log(y_pred)))')
+    loss = -np.sum(Y_matrix * np.log(y_pred))  # categorical cross-entropy
     st.success(np.round(loss,2))
     loss_list = get_my_list()
     loss_list.append(loss)
 
-
-
-
-    # # Backprop calculation
-
+    # Backprop calculation
     st.header(':red[Backpropagation]')
     with st.expander("Gradient y_pred"):
         st.header('Gradient y_pred')
-        grad_y_pred = 2*(y_pred -Y_matrix)
+        grad_y_pred = y_pred - Y_matrix  # derivative of categorical cross-entropy
         grad_y_pred_style = pd.DataFrame(grad_y_pred)
         grad_y_pred_style.columns = Y.columns
         grad_y_pred_style.index = x.name
         st.dataframe(grad_y_pred_style.style.apply(highlight, axis=1))
-
 
     with st.expander("Gradient W2"):
         st.header('Gradient W2')

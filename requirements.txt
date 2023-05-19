@@ -3,3 +3,4 @@ graphviz
 pandas
 numpy
 altair
+google-cloud-bigquery==2.28.1
