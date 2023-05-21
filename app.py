@@ -7,7 +7,7 @@ st.sidebar.success("Select a demo above.")
 
 
 # main.py
-pages = st.source_util.get_pages('main.py')
+pages = st.source_util.get_pages('app.py')
 new_page_names = {
   'app': '🌎 Travel Form',
   'Dense': '🕸️ Dense Neural Net',
