@@ -2,7 +2,8 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import graphviz
-import random
+st.sidebar.success("Select a demo above.")
+
 g1 = graphviz.Digraph(graph_attr={'rankdir':'LR', 'TBbalance':"max"})
 
 g1.attr('node', shape='circle')

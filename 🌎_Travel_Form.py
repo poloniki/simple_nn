@@ -1,23 +1,13 @@
 import streamlit as st
 from google.oauth2 import service_account
 from google.cloud import bigquery
+
 st.set_page_config(page_title="Travel Form", page_icon="🌎")
 st.sidebar.success("Select a demo above.")
 
 
 
-# # main.py
-# pages = st.source_util.get_pages('app.py')
-# new_page_names = {
-#   'app': '🌎 Travel Form',
-#   'Dense': '🕸️ Dense Neural Net',
-#   'RNN': '🔁 Recurrent Neural Net',
-#   'Simple_Node': '📉 Gradient Descent Example',
-# }
 
-# for key, page in pages.items():
-#   if page['page_name'] in new_page_names:
-#     page['page_name'] = new_page_names[page['page_name']]
 
 # Create API client.
 credentials = service_account.Credentials.from_service_account_info(

@@ -8,6 +8,7 @@ import time
 
 import numpy as np
 from numpy.random import randn
+st.sidebar.success("Select a demo above.")
 
 
 
