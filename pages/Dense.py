@@ -1,8 +1,7 @@
 import streamlit as st
 import pandas as pd
-import psycopg2
 import graphviz
-
+from utilities.helper import add_number_to_duplicates,highlight, reluDerivative
 import numpy as np
 from numpy.random import randn
 
@@ -15,19 +14,6 @@ credentials = service_account.Credentials.from_service_account_info(
 )
 client = bigquery.Client(credentials=credentials)
 
-def highlight(data):
-    is_min = data == data.nsmallest(1).iloc[-1]
-    is_max = data == data.nlargest(1).iloc[0]
-    styles = [''] * len(data)
-    min_index = np.flatnonzero(is_min.to_numpy())
-    max_index = np.flatnonzero(is_max.to_numpy())
-    for i in min_index:
-        styles[i] = 'background-color: rgba(255,0,0,0.3)'
-    for i in max_index:
-        styles[i] = 'background-color: rgba(0,255,0,0.3)'
-    return styles
-
-
 graph_loss = graphviz.Digraph(graph_attr={'rankdir':'LR', 'TBbalance':"max"})
 graph_loss.edge('X', 'Mult')
 graph_loss.edge('W1', 'Mult')
@@ -39,10 +25,6 @@ st.graphviz_chart(graph_loss)
 
 
 
-def reluDerivative(x):
-    x[x<=0] = 0
-    x[x>0] = 1
-    return x
 
 
 # Define your project id and dataset id
@@ -53,11 +35,16 @@ dataset_id = 'ml'
 query_ratings = f"SELECT * FROM `{project_id}.{dataset_id}.ratings`"
 # Execute the query and load the result into a pandas DataFrame
 x = pd.read_gbq(query_ratings, credentials=credentials)
+x = add_number_to_duplicates(x, 'name')
 
 # Query to get data from the "answers" table
 query_answers = f"SELECT * FROM `{project_id}.{dataset_id}.answers`"
 # Execute the query and load the result into a pandas DataFrame
 y = pd.read_gbq(query_answers, credentials=credentials)
+y = add_number_to_duplicates(y, 'name')
+y = y[y['name'].isin(x['name'])]
+
+
 
 
 
