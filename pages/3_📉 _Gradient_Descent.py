@@ -1,14 +1,16 @@
 import streamlit as st
 import pandas as pd
-import psycopg2
 import graphviz
 
 import altair as alt
 import time
 
 import numpy as np
-from numpy.random import randn
+
+st.set_page_config(page_title="Gradient Descent", page_icon="📉")
+
 st.sidebar.success("Select a demo above.")
+st.title("Gradient descent for Neural Nets (simplified example)")
 
 
 
@@ -41,7 +43,6 @@ graph_loss.edge('Prediction', 'L2 Loss', label='(y_pred - y_true)**2')
 st.graphviz_chart(graph_loss)
 
 
-#st.code('(100 - max(0, 3*4)*5)**2 # y_true = 100, lets start with random W1 and W2 = 4, 5')
 
 
 

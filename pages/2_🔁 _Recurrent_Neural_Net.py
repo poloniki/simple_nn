@@ -2,7 +2,12 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import graphviz
+
+st.set_page_config(page_title="Recurrent", page_icon="🔁")
+
 st.sidebar.success("Select a demo above.")
+st.title("Recurrent Neural Network example")
+
 
 g1 = graphviz.Digraph(graph_attr={'rankdir':'LR', 'TBbalance':"max"})
 
@@ -45,7 +50,6 @@ def generate_new_sales(last_sales):
 
     # Calculate the new sales value as the mean of the last 3 days plus a random amount
     value = np.round(last_mean+(last_mean*0.12))
-    print(last_mean, last_std, last_sales, value)
     return value
 
 # Generate the next 10 days of sales data based on the initial sales data

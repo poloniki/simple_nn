@@ -1,19 +1,27 @@
 import streamlit as st
 import pandas as pd
 import graphviz
-from utilities.helper import add_number_to_duplicates,highlight, reluDerivative
+from utilities.helper import highlight, reluDerivative,add_number_to_duplicates
+from utilities.load import client, credentials
+st.set_page_config(page_title="Dense", page_icon="🕸️")
+
+
+
 import numpy as np
 from numpy.random import randn
 
-from google.oauth2 import service_account
-from google.cloud import bigquery
+project_id = 'wagon-bootcamp-355610'
+dataset_id = 'ml'
+
+@st.cache_resource()
+def get_my_list():
+    return []
+
 st.sidebar.success("Select a demo above.")
 
-# Create API client.
-credentials = service_account.Credentials.from_service_account_info(
-    st.secrets["gcp_service_account"]
-)
-client = bigquery.Client(credentials=credentials)
+st.title("Dense Neural Network example")
+
+
 
 graph_loss = graphviz.Digraph(graph_attr={'rankdir':'LR', 'TBbalance':"max"})
 graph_loss.edge('X', 'Mult')
@@ -26,24 +34,23 @@ st.graphviz_chart(graph_loss)
 
 
 
+@st.cache_data
+def get_data():
+    # Query to get data from the "ratings" table
+    query_ratings = f"SELECT * FROM `{project_id}.{dataset_id}.ratings`"
+    # Execute the query and load the result into a pandas DataFrame
+    x = pd.read_gbq(query_ratings, credentials=credentials)
+    x = add_number_to_duplicates(x, 'name')
 
+    # Query to get data from the "answers" table
+    query_answers = f"SELECT * FROM `{project_id}.{dataset_id}.answers`"
+    # Execute the query and load the result into a pandas DataFrame
+    y = pd.read_gbq(query_answers, credentials=credentials)
+    y = add_number_to_duplicates(y, 'name')
+    y = y[y['name'].isin(x['name'])]
+    return x,y
 
-# Define your project id and dataset id
-project_id = 'wagon-bootcamp-355610'
-dataset_id = 'ml'
-
-# Query to get data from the "ratings" table
-query_ratings = f"SELECT * FROM `{project_id}.{dataset_id}.ratings`"
-# Execute the query and load the result into a pandas DataFrame
-x = pd.read_gbq(query_ratings, credentials=credentials)
-x = add_number_to_duplicates(x, 'name')
-
-# Query to get data from the "answers" table
-query_answers = f"SELECT * FROM `{project_id}.{dataset_id}.answers`"
-# Execute the query and load the result into a pandas DataFrame
-y = pd.read_gbq(query_answers, credentials=credentials)
-y = add_number_to_duplicates(y, 'name')
-y = y[y['name'].isin(x['name'])]
+x,y = get_data()
 
 
 
@@ -80,27 +87,36 @@ if 'count' not in st.session_state:
 def increment_counter():
 	st.session_state.count += 1
 
+
+st.warning('Always press "Clear Graph" before starting from the beginning', icon="⚠️")
+
 col1, col2, col3  = st.columns(3)
+
 
 with col1:
     initialize =  st.button('Epoch iteration',on_click=increment_counter)
 with col2:
-    if st.button('Clear Cache'):
-        st.runtime.legacy_caching.clear_cache()
+
+    if st.button('Clear Graph'):
+        get_my_list.clear()
 
 
-learning_rate = st.number_input('Learning Rate', value=0.009,key='learning_rate',format="%.3f")
+learning_rate = st.number_input('Learning Rate', value=0.001,key='learning_rate',format="%.3f")
 
 
 
 
-@st.cache(allow_output_mutation=True)
-def get_my_list():
-    return []
+
 
 if initialize:
     if st.session_state.count ==1:
-        w1, w2 = randn(D_in, H), randn(H, D_out)
+
+        std_dev_w1 = np.sqrt(1. / D_in)
+        std_dev_w2 = np.sqrt(1. / H)
+
+        w1 = np.random.normal(0, std_dev_w1, size=(D_in, H))
+        w2 = np.random.normal(0, std_dev_w2, size=(H, 5))
+        # w1, w2 = randn(D_in, H), randn(H, D_out)
     else:
         w1,w2 = st.session_state.w1, st.session_state.w2
 
@@ -118,10 +134,10 @@ if initialize:
 
 
     expander_W1 = st.expander("W1 with 10 layers")
-    expander_W1.dataframe(w1.style.apply(highlight, axis=1))
+    expander_W1.dataframe(w1)
 
     expander_W2 = st.expander("W2")
-    expander_W2.dataframe(w2.style.apply(highlight, axis=1))
+    expander_W2.dataframe(w2)
 
 
     with st.expander("X * W1"):
@@ -145,16 +161,28 @@ if initialize:
    # Forward pass:
     # Relu*W2 | h.dot(w2)
     with st.expander("Y_Pred = Relu*W2"):
-        st.header("Y_Pred = Relu*W2 | np.exp(h.dot(w2)) / np.sum(np.exp(h.dot(w2)))")
+        st.header("Y_Pred = Relu*W2")
         y_pred_raw = h.dot(w2)
-        y_pred = np.exp(y_pred_raw) / np.sum(np.exp(y_pred_raw))  # softmax
+        y_pred_style = pd.DataFrame(y_pred_raw)
+        y_pred_style.columns = Y.columns
+        y_pred_style.index = x.name
+        st.dataframe(y_pred_style.style.apply(highlight, axis=1))
+
+
+
+    with st.expander("Softmax(y_pred)"):
+        st.header("np.exp(y_pred) / np.sum(y_pred))")
+        exponent = np.exp(y_pred_raw)
+
+        y_pred =  exponent / np.sum(exponent, axis=1, keepdims=True)  # softmax
         y_pred_style = pd.DataFrame(y_pred)
         y_pred_style.columns = Y.columns
         y_pred_style.index = x.name
         st.dataframe(y_pred_style.style.apply(highlight, axis=1))
 
+
     # Loss calculation
-    st.subheader('Loss - (-np.sum(y_true * np.log(y_pred)))')
+    st.subheader('Categorical Crossentropy Loss = -np.sum(y_true * np.log(y_pred))')
     loss = -np.sum(Y_matrix * np.log(y_pred))  # categorical cross-entropy
     st.success(np.round(loss,2))
     loss_list = get_my_list()
@@ -168,7 +196,7 @@ if initialize:
         grad_y_pred_style = pd.DataFrame(grad_y_pred)
         grad_y_pred_style.columns = Y.columns
         grad_y_pred_style.index = x.name
-        st.dataframe(grad_y_pred_style.style.apply(highlight, axis=1))
+        st.dataframe(grad_y_pred_style)
 
     with st.expander("Gradient W2"):
         st.header('Gradient W2')
@@ -176,7 +204,7 @@ if initialize:
         grad_w2_style = pd.DataFrame(grad_w2)
         grad_w2_style.columns = Y.columns
         grad_w2_style.index = w1.columns
-        st.dataframe(grad_w2_style.style.apply(highlight, axis=1))
+        st.dataframe(grad_w2_style)
 
 
 
@@ -206,7 +234,7 @@ if initialize:
         grad_w1_style = pd.DataFrame(grad_w1)
         grad_w1_style.columns = w1.columns
         grad_w1_style.index = X.columns
-        st.dataframe(grad_w1_style.style.apply(highlight, axis=1))
+        st.dataframe(grad_w1_style)
 
     w1 -= learning_rate*grad_w1
     w2 -= learning_rate*grad_w2
@@ -218,7 +246,6 @@ if initialize:
 
 
     st.line_chart(loss_list)
-    #st.write(st.session_state.loss_list)
 
 with st.expander("Predict"):
     st.subheader('In prediction we only perform forward propagation')
