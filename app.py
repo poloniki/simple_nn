@@ -6,18 +6,18 @@ st.sidebar.success("Select a demo above.")
 
 
 
-# main.py
-pages = st.source_util.get_pages('app.py')
-new_page_names = {
-  'app': '🌎 Travel Form',
-  'Dense': '🕸️ Dense Neural Net',
-  'RNN': '🔁 Recurrent Neural Net',
-  'Simple_Node': '📉 Gradient Descent Example',
-}
+# # main.py
+# pages = st.source_util.get_pages('app.py')
+# new_page_names = {
+#   'app': '🌎 Travel Form',
+#   'Dense': '🕸️ Dense Neural Net',
+#   'RNN': '🔁 Recurrent Neural Net',
+#   'Simple_Node': '📉 Gradient Descent Example',
+# }
 
-for key, page in pages.items():
-  if page['page_name'] in new_page_names:
-    page['page_name'] = new_page_names[page['page_name']]
+# for key, page in pages.items():
+#   if page['page_name'] in new_page_names:
+#     page['page_name'] = new_page_names[page['page_name']]
 
 # Create API client.
 credentials = service_account.Credentials.from_service_account_info(
