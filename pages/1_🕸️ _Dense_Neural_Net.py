@@ -50,10 +50,15 @@ def get_data():
     y = y[y['name'].isin(x['name'])]
     return x,y
 
+
+
+
 x,y = get_data()
 
 
-
+if st.button('Reload Data'):
+    st.cache_data.clear()
+    x,y = get_data()
 
 
 expander_X = st.expander("X")
