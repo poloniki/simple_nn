@@ -19,12 +19,6 @@ for key, page in pages.items():
   if page['page_name'] in new_page_names:
     page['page_name'] = new_page_names[page['page_name']]
 
-
-
-
-for key, page in pages.items():
-  if page['page_name'] in new_page_names:
-    page['page_name'] = new_page_names[page['page_name']]
 # Create API client.
 credentials = service_account.Credentials.from_service_account_info(
     st.secrets["gcp_service_account"]
