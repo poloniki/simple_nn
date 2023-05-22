@@ -45,21 +45,26 @@ st.graphviz_chart(graph_loss)
 
 
 
-
+code = '''from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+model = Sequential()
+model.add(Dense(1, activation='relu', input_dim=1))
+model.add(Dense(1, activation='linear'))'''
+st.code(code, language='python')
 
 with st.form(key="test"):
 
     col1, col2  = st.columns(2)
     with col1:
-        x = st.number_input('X',min_value=0.0, max_value=100.0, value=0.3,key='x',format="%.2f") #3
+        x = st.number_input('X (feature - Height)',min_value=0.0, max_value=200.0, value=0.3,key='x',format="%.2f") #3
     with col2:
-        y = st.number_input('Y', value=1.0,key='y',format="%.2f") #100
+        y = st.number_input('Y (target - weight)', value=1.0,key='y',format="%.2f") #100
 
     col3, col4, col5  = st.columns(3)
     with col3:
-        w1 = st.number_input('W1', value=0.4,key='w1',format="%.2f") #4
+        w1 = st.number_input('W1 (Neuron 1 - new feature)', value=0.4,key='w1',format="%.2f") #4
     with col4:
-        w2 = st.number_input('W2', value=0.5,key='w2',format="%.2f") #5
+        w2 = st.number_input('W2 (Predictor - coefficient)', value=0.5,key='w2',format="%.2f") #5
     with col5:
         learning_rate = st.number_input('learning rate', value=0.1, step=0.1, format="%.1f", key='learning_rate')
     submit =  st.form_submit_button("Submit")
